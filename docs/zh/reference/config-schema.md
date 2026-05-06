@@ -15,16 +15,15 @@ llm:
 comfyui:
   comfyui_url: "http://127.0.0.1:8188"
   comfyui_api_key: ""  # ComfyUI API 密钥（可选）
-  runninghub_api_key: ""
-  runninghub_concurrent_limit: 1  # 并发限制 (1-10)
-  runninghub_instance_type: ""  # 实例类型（可选，设为 "plus" 使用 48GB 显存）
-  
+  seedance.api_key: ""
+  cloud_concurrent_limit: 1  # 并发限制 (1-10)
+    
   image:
-    default_workflow: "runninghub/image_flux.json"
+    default_workflow: "selfhost/image_flux.json"
     prompt_prefix: "Minimalist illustration style"
   
   video:
-    default_workflow: "runninghub/video_wan2.1_fusionx.json"
+    default_workflow: "volcengine/video_seedance_2_0.json"
     prompt_prefix: "Minimalist illustration style"
   
   tts:
@@ -51,12 +50,11 @@ template:
 - `comfyui_url`: 本地 ComfyUI 地址（默认 `http://127.0.0.1:8188`）
 - `comfyui_api_key`: ComfyUI API 密钥（可选，用于 [Comfy Platform](https://platform.comfy.org/profile/api-keys)）
 
-### RunningHub 云端配置
+### 云端 API（Seedance）配置
 
-- `runninghub_api_key`: RunningHub API 密钥（使用云端工作流时必填）
-- `runninghub_concurrent_limit`: 并发执行限制（1-10，普通会员默认为 1）
-- `runninghub_instance_type`: 实例类型（可选）
-  - 留空或不设置：使用 24GB 显存机器
+- `seedance.api_key`: Volcengine ARK API 密钥（使用云端工作流时必填）
+- `cloud_concurrent_limit`: 并发执行限制（1-10，普通会员默认为 1）
+- `  - 留空或不设置：使用 24GB 显存机器
   - `"plus"`: 使用 48GB 显存机器（适合大尺寸视频生成）
 
 ### 图像配置
@@ -67,7 +65,7 @@ template:
 ### 视频配置
 
 - `default_workflow`: 默认视频生成工作流
-  - `runninghub/video_wan2.1_fusionx.json`: 云端工作流（推荐，无需本地环境）
+  - `volcengine/video_seedance_2_0.json`: 云端工作流（推荐，无需本地环境）
   - `selfhost/video_wan2.1_fusionx.json`: 本地工作流（需要本地 ComfyUI 支持）
 - `prompt_prefix`: 视频提示词前缀（用于控制视频生成风格）
 

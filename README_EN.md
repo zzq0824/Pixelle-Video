@@ -34,15 +34,14 @@ Just input a **topic**, and Pixelle-Video will automatically:
 
 - ✅ **2026-01-26**: Added the Motion Transfer pipeline — upload a reference video and an image to transfer motion.
 - ✅ **2026-01-14**: Added "Digital Human" and "Image-to-Video" pipelines, multi-language TTS voices support
-- ✅ **2026-01-06**: Added RunningHub 48G VRAM machine support
-- ✅ **2025-12-28**: Configurable RunningHub concurrency limit, improved LLM structured data response handling
+- ✅ **2025-12-28**: Configurable cloud-API concurrency limit, improved LLM structured data response handling
 - ✅ **2025-12-17**: Added ComfyUI API Key configuration, Nano Banana model support, API template custom parameters
 - ✅ **2025-12-10**: Built-in FAQ in sidebar, fixed edge-tts version to resolve TTS service instability
 - ✅ **2025-12-08**: Support multiple script split modes (paragraph/line/sentence), improved template selection with direct preview
 - ✅ **2025-12-06**: Fixed video generation API URL path handling with cross-platform compatibility
 - ✅ **2025-12-05**: Added Windows all-in-one package download, optimized image and video analysis workflows
 - ✅ **2025-12-04**: New "Custom Media" feature - upload your photos/videos with AI-powered analysis and script generation
-- ✅ **2025-11-18**: Parallel processing for RunningHub, added history page, batch video task creation support
+- ✅ **2025-11-18**: Parallel processing for cloud APIs, added history page, batch video task creation support
 
 
 ## ✨ Key Features
@@ -243,7 +242,7 @@ Browser will automatically open http://localhost:8501
 
 On first use, expand the "⚙️ System Configuration" panel and fill in:
 - **LLM Configuration**: Select AI model (such as Qwen, GPT, etc.) and enter API Key
-- **Image Configuration**: If you need to generate images, configure ComfyUI address or RunningHub API Key
+- **Image Configuration**: Configure local ComfyUI URL for image generation; configure Volcengine ARK API Key for Seedance video generation
 
 After configuration, click "Save Configuration", and you can start generating videos!
 
@@ -279,7 +278,7 @@ Used for generating video images.
 - Click "Test Connection" to confirm service is available
 
 **Cloud Deployment**  
-- RunningHub API Key: Cloud image generation service key
+- Volcengine ARK API Key: Seedance video generation service key
 
 After configuration, click "Save Configuration".
 
@@ -324,7 +323,7 @@ Determine what style of images AI generates.
 
 **ComfyUI Workflow**  
 - Select image generation workflow from dropdown menu
-- Supports local deployment (selfhost) and cloud (RunningHub) workflows
+- Supports local deployment (selfhost) and cloud-API (volcengine/Seedance) workflows
 - Default uses `image_flux.json`
 - If you know ComfyUI, you can put your own workflows in the `workflows/` folder
 
@@ -387,7 +386,7 @@ A: **This project fully supports free operation!**
 
 - **Completely Free Solution**: LLM using Ollama (local) + ComfyUI local deployment = 0 cost
 - **Recommended Solution**: LLM using Qwen (extremely low cost, highly cost-effective) + ComfyUI local deployment
-- **Cloud Solution**: LLM using OpenAI + Image using RunningHub (higher cost but no need for local environment)
+- **Cloud Solution**: LLM using OpenAI + Video using Seedance (higher cost but no need for local environment)
 
 **Selection Suggestion**: If you have a local GPU, recommend completely free solution, otherwise recommend using Qwen (cost-effective)
 

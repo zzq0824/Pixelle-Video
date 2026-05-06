@@ -31,7 +31,7 @@ Yes, you can use traditional pip + venv approach.
 
 **Tip**: Beginners can start with text-only templates for instant zero-barrier experience!
 
-**Alternative**: If you need AI images but don't want local ComfyUI, use RunningHub cloud service.
+**Alternative**: If you need AI images but don't want local ComfyUI, use Seedance cloud service.
 
 ### Q: Which LLMs are supported?
 
@@ -61,7 +61,7 @@ Try:
 
 - **Completely Free**: Ollama + Local ComfyUI = $0
 - **Recommended**: Qianwen + Local ComfyUI ≈ $0.01-0.05/video
-- **Cloud Solution**: OpenAI + RunningHub (higher cost)
+- **Cloud Solution**: OpenAI + Seedance (higher cost)
 
 ---
 

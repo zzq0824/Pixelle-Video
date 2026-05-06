@@ -128,56 +128,19 @@ class DigitalHumanPipelineUI(PipelineUI):
                 st.markdown(f"**{tr('help.how')}**")
                 st.markdown(tr("asset_based.source.how"))
             
-            source_options = {
-                "runninghub": tr("asset_based.source.runninghub"),
-                "selfhost": tr("asset_based.source.selfhost")
-            }
-            
-            # Check if RunningHub API key is configured
+            # Selfhost is now the only workflow source for digital human
             comfyui_config = config_manager.get_comfyui_config()
-            has_runninghub = bool(comfyui_config.get("runninghub_api_key"))
             has_selfhost = bool(comfyui_config.get("comfyui_url"))
-            
-            # Default to runninghub always
-            default_source_index = 0
-            
-            source = st.radio(
-                tr("asset_based.source.select"),
-                options=list(source_options.keys()),
-                format_func=lambda x: source_options[x],
-                index=default_source_index,
-                horizontal=True,
-                key="digital_human_workflow_source",
-                label_visibility="collapsed"
-            )
-            
-            # Initialize workflow_config with default value based on source selection
-            # This ensures the variable is always defined even if the backend is not configured
-            if source == "runninghub":
-                workflow_config = {
-                    "first_workflow_path": "workflows/runninghub/digital_image.json",
-                    "second_workflow_path": "workflows/runninghub/digital_combination.json",
-                    "third_workflow_path": "workflows/runninghub/digital_customize.json"
-                }
-                if not has_runninghub:
-                    st.warning(tr("asset_based.source.runninghub_not_configured"))
-                else:
-                    st.info(tr("asset_based.source.runninghub_hint"))
+
+            workflow_config = {
+                "first_workflow_path": "workflows/selfhost/digital_image.json",
+                "second_workflow_path": "workflows/selfhost/digital_combination.json",
+                "third_workflow_path": "workflows/selfhost/digital_customize.json"
+            }
+            if not has_selfhost:
+                st.warning(tr("asset_based.source.selfhost_not_configured"))
             else:
-                workflow_config = {
-                    "first_workflow_path": "workflows/selfhost/digital_image.json",
-                    "second_workflow_path": "workflows/selfhost/digital_combination.json",
-                    "third_workflow_path": "workflows/selfhost/digital_customize.json"
-                }
-                if not has_selfhost:
-                    st.warning(tr("asset_based.source.selfhost_not_configured"))
-                else:
-                    st.info(tr("asset_based.source.selfhost_hint"))
-                    
-                    # Check and warn for selfhost workflows (auto popup if not confirmed)
-                    # Warn for the first workflow as representative
-                    # TODO: need to check if the workflow is valid
-                    # check_and_warn_selfhost_workflow("selfhost/digital_image.json")
+                st.info(tr("asset_based.source.selfhost_hint"))
             return workflow_config
 
     def render_digital_human_mode(self, character_asset_paths: list) -> dict:
@@ -418,10 +381,7 @@ class DigitalHumanPipelineUI(PipelineUI):
                                 "videoimage": generated_image_path,
                                 "audio": audio_path
                             }
-                            if second_workflow_config.get("source") == "runninghub" and "workflow_id" in second_workflow_config:
-                                workflow_input = second_workflow_config["workflow_id"]
-                            else:
-                                workflow_input = str(second_workflow_config)
+                            workflow_input = str(second_workflow_config)
                             second_result = await kit.execute(workflow_input, second_workflow_params)
                             # Video Link Extraction
                             generated_video_url = None
@@ -468,10 +428,7 @@ class DigitalHumanPipelineUI(PipelineUI):
                                 status_text.text(tr("progress.step_image"))
                                 kit = await pixelle_video._get_or_create_comfykit()
                                 workflow_config = json.load(open(workflow_path, 'r', encoding='utf8'))
-                                if workflow_config.get("source") == "runninghub" and "workflow_id" in workflow_config:
-                                    workflow_input = workflow_config["workflow_id"]
-                                else:
-                                    workflow_input = str(workflow_config)
+                                workflow_input = str(workflow_config)
                                 combine_image = await kit.execute(workflow_input, workflow_params)
                                 if combine_image.status != "completed":
                                     raise Exception(f"workflow execution failed: {combine_image.msg}")
@@ -510,10 +467,7 @@ class DigitalHumanPipelineUI(PipelineUI):
                                     "videoimage": generated_image_url,
                                     "audio": audio_path
                                 }
-                                if second_workflow_config.get("source") == "runninghub" and "workflow_id" in second_workflow_config:
-                                    workflow_input = second_workflow_config["workflow_id"]
-                                else:
-                                    workflow_input = str(second_workflow_config)
+                                workflow_input = str(second_workflow_config)
                                 second_result = await kit.execute(workflow_input, second_workflow_params)
                                 # Video Link Extraction
                                 generated_video_url = None
@@ -547,10 +501,7 @@ class DigitalHumanPipelineUI(PipelineUI):
                                 status_text.text(tr("progress.step_image"))
                                 kit = await pixelle_video._get_or_create_comfykit()
                                 workflow_config = json.load(open(workflow_path, 'r', encoding='utf8'))
-                                if workflow_config.get("source") == "runninghub" and "workflow_id" in workflow_config:
-                                    workflow_input = workflow_config["workflow_id"]
-                                else:
-                                    workflow_input = str(workflow_config)
+                                workflow_input = str(workflow_config)
                                 synthesis_result = await kit.execute(workflow_input, workflow_params)
                                 if synthesis_result.status != "completed":
                                     raise Exception(f"workflow execution failed: {synthesis_result.msg}")
@@ -591,10 +542,7 @@ class DigitalHumanPipelineUI(PipelineUI):
                                     "videoimage": generated_image_url,
                                     "audio": audio_path
                                 }
-                                if second_workflow_config.get("source") == "runninghub" and "workflow_id" in second_workflow_config:
-                                    workflow_input = second_workflow_config["workflow_id"]
-                                else:
-                                    workflow_input = str(second_workflow_config)
+                                workflow_input = str(second_workflow_config)
                                 second_result = await kit.execute(workflow_input, second_workflow_params)
                                 # Video Link Extraction
                                 generated_video_url = None

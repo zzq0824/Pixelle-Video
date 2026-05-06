@@ -39,9 +39,9 @@ LLM（大语言模型）用于生成视频文案。
 
 ### 云端部署（推荐）
 
-使用 RunningHub 云端服务，无需本地 GPU：
+使用 云端 API（Seedance）服务，无需本地 GPU：
 
-1. 注册 RunningHub 账号
+1. 注册 Seedance 账号
 2. 获取 API Key
 3. 在配置中填写 API Key
 4. 配置高级选项（可选）：

@@ -23,7 +23,7 @@ if [ ! -f config.yaml ]; then
         echo "⚠️  IMPORTANT: Please edit config.yaml and fill in:"
         echo "   - LLM API key and settings"
         echo "   - ComfyUI URL (use host.docker.internal:8188 for local Mac/Windows)"
-        echo "   - RunningHub API key (optional, for cloud workflows)"
+        echo "   - Volcengine ARK API key (optional, for Seedance video generation)"
         echo ""
         echo "You can also configure these settings in the Web UI after starting."
         echo ""

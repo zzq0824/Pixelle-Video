@@ -38,8 +38,8 @@ class VideoGenerateRequest(BaseModel):
     
     # === TTS Parameters ===
     tts_workflow: Optional[str] = Field(
-        None, 
-        description="TTS workflow key (e.g., 'runninghub/tts_edge.json'). If not specified, uses default workflow from config."
+        None,
+        description="TTS workflow key (e.g., 'selfhost/tts_edge.json'). If not specified, uses default workflow from config."
     )
     ref_audio: Optional[str] = Field(
         None, 

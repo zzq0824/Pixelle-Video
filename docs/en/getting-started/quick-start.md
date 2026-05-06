@@ -30,7 +30,7 @@ Your browser will automatically open `http://localhost:8501`
 On first use, expand the「⚙️ System Configuration」panel and confirm:
 
 - **LLM Configuration**: Select an AI model (e.g., Qianwen, GPT) and enter API Key
-- **Image Configuration**: Configure ComfyUI address or RunningHub API Key
+- **Image Configuration**: Configure ComfyUI address or Volcengine ARK API Key
 
 If not yet configured, see the [Configuration Guide](configuration.md).
 

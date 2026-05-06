@@ -122,7 +122,7 @@ def render_style_config(pixelle_video):
         # ComfyUI Mode UI
         # ================================================================
         else:  # comfyui mode
-            tts_workflow_key = "runninghub/tts_index2.json"  # fallback
+            tts_workflow_key = "selfhost/tts_edge.json"  # fallback
             
             # Reference audio upload (optional, for voice cloning)
             ref_audio_file = st.file_uploader(

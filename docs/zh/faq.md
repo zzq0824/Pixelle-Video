@@ -31,7 +31,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 **推荐**：新手可以从纯文本模板开始，零门槛快速体验！
 
-**其他选项**：如果需要 AI 配图但不想本地部署 ComfyUI，可以使用 RunningHub 云端服务。
+**其他选项**：如果需要 AI 配图但不想本地部署 ComfyUI，可以使用 云端 API（Seedance）服务。
 
 ### Q: 支持哪些 LLM？
 
@@ -61,7 +61,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 - **完全免费**: Ollama + 本地 ComfyUI = 0 元
 - **推荐方案**: 通义千问 + 本地 ComfyUI ≈ 0.01-0.05 元/视频
-- **云端方案**: OpenAI + RunningHub（费用较高）
+- **云端方案**: OpenAI + Seedance（费用较高）
 
 ---
 

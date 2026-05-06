@@ -40,19 +40,18 @@ async def list_tts_workflows(pixelle_video: PixelleVideoDep):
     """
     List available TTS workflows
     
-    Returns list of TTS workflows from both RunningHub and self-hosted sources.
-    
+    Returns list of TTS workflows discovered under workflows/.
+
     Example response:
     ```json
     {
         "workflows": [
             {
                 "name": "tts_edge.json",
-                "display_name": "tts_edge.json - Runninghub",
-                "source": "runninghub",
-                "path": "workflows/runninghub/tts_edge.json",
-                "key": "runninghub/tts_edge.json",
-                "workflow_id": "123456"
+                "display_name": "tts_edge.json - Selfhost",
+                "source": "selfhost",
+                "path": "workflows/selfhost/tts_edge.json",
+                "key": "selfhost/tts_edge.json"
             }
         ]
     }
@@ -81,27 +80,26 @@ async def list_media_workflows(pixelle_video: PixelleVideoDep):
     """
     List available media workflows (both image and video)
     
-    Returns list of all media workflows from both RunningHub and self-hosted sources.
-    
+    Returns list of all media workflows discovered under workflows/.
+
     Example response:
     ```json
     {
         "workflows": [
             {
                 "name": "image_flux.json",
-                "display_name": "image_flux.json - Runninghub",
-                "source": "runninghub",
-                "path": "workflows/runninghub/image_flux.json",
-                "key": "runninghub/image_flux.json",
-                "workflow_id": "123456"
+                "display_name": "image_flux.json - Selfhost",
+                "source": "selfhost",
+                "path": "workflows/selfhost/image_flux.json",
+                "key": "selfhost/image_flux.json"
             },
             {
-                "name": "video_wan2.1.json",
-                "display_name": "video_wan2.1.json - Runninghub",
-                "source": "runninghub",
-                "path": "workflows/runninghub/video_wan2.1.json",
-                "key": "runninghub/video_wan2.1.json",
-                "workflow_id": "123457"
+                "name": "video_seedance_2_0.json",
+                "display_name": "video_seedance_2_0.json - Volcengine",
+                "source": "volcengine",
+                "path": "workflows/volcengine/video_seedance_2_0.json",
+                "key": "volcengine/video_seedance_2_0.json",
+                "provider_config": {"model": "doubao-seedance-2-0-260128"}
             }
         ]
     }

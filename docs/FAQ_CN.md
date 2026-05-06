@@ -18,12 +18,12 @@
    - **视频类工作流**：前缀必须是 `video_`
    - **语音合成类**：前缀必须是 `tts_`
 
-### 如何在本地调试项目中的 RunningHub 工作流？
+### 如何在本地调试项目中的 Seedance 工作流？
 
-如果您想在本地测试项目中原本用于 RunningHub 云端的工作流：
+如果您想在本地测试项目中原本用于 云端 API（Seedance）的工作流：
 
-1. **获取 ID**：打开runninghub工作流文件，找到id
-2. **加载工作流**：将 ID 粘贴到 RunningHub 网站 URL 后缀上，如：https://www.runninghub.cn/workflow/1983513964837543938 进入该工作流页面。
+1. **获取 ID**：打开volcengine工作流文件，找到id
+2. **加载工作流**：将 ID 粘贴到 Seedance 网站 URL 后缀上，如：https://www.volcengine.cn/workflow/1983513964837543938 进入该工作流页面。
   <img src="https://github.com/user-attachments/assets/e5330b3a-5475-44f2-81e4-057d33fdf71b" width="600" alt="参数绑定示例" />
 
 

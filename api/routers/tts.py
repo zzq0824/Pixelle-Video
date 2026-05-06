@@ -45,7 +45,7 @@ async def tts_synthesize(
     ```json
     {
         "text": "Hello, welcome to Pixelle-Video!",
-        "workflow": "runninghub/tts_edge.json"
+        "workflow": "selfhost/tts_edge.json"
     }
     ```
     
@@ -53,7 +53,7 @@ async def tts_synthesize(
     ```json
     {
         "text": "Hello, this is a cloned voice",
-        "workflow": "runninghub/tts_index2.json",
+        "workflow": "selfhost/tts_edge.json",
         "ref_audio": "path/to/reference.wav"
     }
     ```

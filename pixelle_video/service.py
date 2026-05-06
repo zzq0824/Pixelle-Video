@@ -118,13 +118,7 @@ class PixelleVideoCore:
             kit_config["comfyui_url"] = comfyui_config["comfyui_url"]
         if comfyui_config.get("comfyui_api_key"):
             kit_config["api_key"] = comfyui_config["comfyui_api_key"]
-        if comfyui_config.get("runninghub_api_key"):
-            kit_config["runninghub_api_key"] = comfyui_config["runninghub_api_key"]
-        # Only pass instance_type if it has a non-empty value
-        instance_type = comfyui_config.get("runninghub_instance_type")
-        if instance_type and instance_type.strip():
-            kit_config["runninghub_instance_type"] = instance_type
-        
+
         return kit_config
     
     def _compute_comfykit_config_hash(self, config: dict) -> str:

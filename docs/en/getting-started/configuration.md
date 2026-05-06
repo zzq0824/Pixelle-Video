@@ -39,9 +39,9 @@ Using local ComfyUI service:
 
 ### Cloud Deployment (Recommended)
 
-Using RunningHub cloud service, no local GPU required:
+Using Seedance cloud service, no local GPU required:
 
-1. Register for a RunningHub account
+1. Register for a Seedance account
 2. Obtain API Key
 3. Enter API Key in configuration
 4. Configure advanced options (optional):

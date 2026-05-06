@@ -171,16 +171,14 @@ class ActionTransferPipelineUI(PipelineUI):
             
             def list_action_transfer_workflows():
                 result = []
-                for source in ("runninghub", "selfhost"):
-                    dir_path = os.path.join("workflows", source)
-                    if not os.path.isdir(dir_path):
-                        continue
+                source = "selfhost"
+                dir_path = os.path.join("workflows", source)
+                if os.path.isdir(dir_path):
                     for fname in os.listdir(dir_path):
                         if fname.startswith("af_") and fname.endswith(".json"):
-                            display = f"{fname} - {'Runninghub' if source == 'runninghub' else 'Selfhost'}"
                             result.append({
                                 "key": f"{source}/{fname}",
-                                "display_name": display
+                                "display_name": f"{fname} - Selfhost"
                             })
                 return result
             
@@ -312,10 +310,7 @@ class ActionTransferPipelineUI(PipelineUI):
                             "second": second
                         }
 
-                        if workflow_config.get("source") == "runninghub" and "workflow_id" in workflow_config:
-                            workflow_input = workflow_config["workflow_id"]
-                        else:
-                            workflow_input = str(workflow_path)
+                        workflow_input = str(workflow_path)
 
                         video_result = await kit.execute(workflow_input, workflow_params)
 
