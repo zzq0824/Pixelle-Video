@@ -87,7 +87,6 @@ class AssetBasedPipeline(LinearVideoPipeline):
         video_title: str = "",
         intent: Optional[str] = None,
         duration: int = 30,
-        source: str = "runninghub",
         bgm_path: Optional[str] = None,
         bgm_volume: float = 0.2,
         bgm_mode: str = "loop",
@@ -96,13 +95,12 @@ class AssetBasedPipeline(LinearVideoPipeline):
     ) -> PipelineContext:
         """
         Execute pipeline with user-provided assets
-        
+
         Args:
             assets: List of asset file paths
             video_title: Video title
             intent: Video intent/purpose (defaults to video_title)
             duration: Target duration in seconds
-            source: Workflow source ("runninghub" or "selfhost")
             bgm_path: Path to background music file (optional)
             bgm_volume: BGM volume (0.0-1.0, default 0.2)
             bgm_mode: BGM mode ("loop" or "once", default "loop")
@@ -220,24 +218,22 @@ class AssetBasedPipeline(LinearVideoPipeline):
             asset_type = self._get_asset_type(asset_path_obj)
             
             if asset_type == "image":
-                # Analyze image using ImageAnalysisService
-                analysis_source = context.request.get("source", "runninghub")
-                description = await self.core.image_analysis(asset_path, source=analysis_source)
-                
+                # Analyze image using ImageAnalysisService (selfhost workflow)
+                description = await self.core.image_analysis(asset_path)
+
                 self.asset_index[asset_path] = {
                     "path": asset_path,
                     "type": "image",
                     "name": asset_path_obj.name,
                     "description": description
                 }
-                
+
                 logger.info(f"✅ Image analyzed: {description[:50]}...")
-            
+
             elif asset_type == "video":
-                # Analyze video using VideoAnalysisService
-                analysis_source = context.request.get("source", "runninghub")
+                # Analyze video using VideoAnalysisService (selfhost workflow)
                 try:
-                    description = await self.core.video_analysis(asset_path, source=analysis_source)
+                    description = await self.core.video_analysis(asset_path)
                     
                     self.asset_index[asset_path] = {
                         "path": asset_path,
@@ -831,7 +827,6 @@ class AssetBasedPipeline(LinearVideoPipeline):
                 "config": {
                     "llm_model": self.core.config.get("llm", {}).get("model", "unknown"),
                     "llm_base_url": self.core.config.get("llm", {}).get("base_url", "unknown"),
-                    "source": ctx.request.get("source", "runninghub"),
                 }
             }
             

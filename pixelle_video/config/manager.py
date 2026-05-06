@@ -129,9 +129,7 @@ class ConfigManager:
         return {
             "comfyui_url": self.config.comfyui.comfyui_url,
             "comfyui_api_key": self.config.comfyui.comfyui_api_key,
-            "runninghub_api_key": self.config.comfyui.runninghub_api_key,
-            "runninghub_concurrent_limit": self.config.comfyui.runninghub_concurrent_limit,
-            "runninghub_instance_type": self.config.comfyui.runninghub_instance_type,
+            "cloud_concurrent_limit": self.config.comfyui.cloud_concurrent_limit,
             "tts": {
                 "default_workflow": self.config.comfyui.tts.default_workflow,
             },
@@ -144,14 +142,12 @@ class ConfigManager:
                 "prompt_prefix": self.config.comfyui.video.prompt_prefix,
             }
         }
-    
+
     def set_comfyui_config(
-        self, 
+        self,
         comfyui_url: Optional[str] = None,
         comfyui_api_key: Optional[str] = None,
-        runninghub_api_key: Optional[str] = None,
-        runninghub_concurrent_limit: Optional[int] = None,
-        runninghub_instance_type: Optional[str] = None
+        cloud_concurrent_limit: Optional[int] = None,
     ):
         """Set ComfyUI global configuration"""
         updates = {}
@@ -159,14 +155,9 @@ class ConfigManager:
             updates["comfyui_url"] = comfyui_url
         if comfyui_api_key is not None:
             updates["comfyui_api_key"] = comfyui_api_key
-        if runninghub_api_key is not None:
-            updates["runninghub_api_key"] = runninghub_api_key
-        if runninghub_concurrent_limit is not None:
-            updates["runninghub_concurrent_limit"] = runninghub_concurrent_limit
-        if runninghub_instance_type is not None:
-            # Empty string means disable (treat as None for storage)
-            updates["runninghub_instance_type"] = runninghub_instance_type if runninghub_instance_type else None
-        
+        if cloud_concurrent_limit is not None:
+            updates["cloud_concurrent_limit"] = cloud_concurrent_limit
+
         if updates:
             self.update({"comfyui": updates})
 

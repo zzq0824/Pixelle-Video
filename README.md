@@ -33,17 +33,17 @@ https://github.com/user-attachments/assets/a42e7457-fcc8-40da-83fc-784c45a8b95d
 
 ## 📋 最近更新
 
+- ✅ **2026-05-06**: 新增字节跳动 Seedance 2.0（火山引擎方舟）视频生成 API 集成；移除 RunningHub 云端集成，简化为「本地 ComfyUI + Seedance 云端 API」两条路径
 - ✅ **2026-01-26**: 新增「动作迁移」模块，上传参考视频和图片进行动作迁移
 - ✅ **2026-01-14**: 新增「数字人口播」和「图生视频」流水线，新增多语言 TTS 音色支持
-- ✅ **2026-01-06**: 新增 RunningHub 48G 显存机器调用支持
-- ✅ **2025-12-28**: 支持 RunningHub 并发限制可配置，优化 LLM 返回结构化数据的逻辑
+- ✅ **2025-12-28**: 支持云端 API 工作流并发限制可配置，优化 LLM 返回结构化数据的逻辑
 - ✅ **2025-12-17**: 支持 ComfyUI API Key 配置，支持 Nano Banana 模型调用，API 接口支持模板自定义参数
 - ✅ **2025-12-10**: 侧边栏内置 FAQ，锁定 edge-tts 版本修复 TTS 服务不稳定问题
 - ✅ **2025-12-08**: 支持固定脚本多种分割方式(段落/行/句子)，优化模板选择交互逻辑支持直接预览选择
 - ✅ **2025-12-06**: 修复视频生成 API 返回 URL 路径处理，支持跨平台兼容
 - ✅ **2025-12-05**: 新增 Windows 整合包下载，优化图片与视频反推工作流
 - ✅ **2025-12-04**: 新增「自定义素材」功能，支持用户上传自己的照片和视频，AI 智能分析生成脚本
-- ✅ **2025-11-18**: 优化 RunningHub 服务调用支持并行处理，新增历史记录页面，支持批量创建视频任务
+- ✅ **2025-11-18**: 优化云端服务调用支持并行处理，新增历史记录页面，支持批量创建视频任务
 
 
 ## ✨ 功能亮点
@@ -247,9 +247,12 @@ uv run streamlit run web/app.py
 
 首次使用时，展开「⚙️ 系统配置」面板，填写：
 - **LLM 配置**: 选择 AI 模型（如通义千问、GPT 等）并填入 API Key
-- **图像配置**: 如需生成图片，配置 ComfyUI 地址或 RunningHub API Key
+- **本地 ComfyUI**（图像 / TTS / 图生视频等工作流）：配置 ComfyUI 服务地址，默认 `http://127.0.0.1:8188`
+- **Seedance 视频 API**（推荐，无需本地 GPU）：填入火山引擎方舟（Volcengine Ark）API Key
 
 配置好后点击「保存配置」，就可以开始生成视频了！
+
+> 默认视频工作流是 `volcengine/video_seedance_2_0.json`（Seedance 2.0），需要火山引擎 API Key。如果你已部署本地 ComfyUI，可以在 Web 配置或 `config.yaml` 切换到 `selfhost/video_wan2.1_fusionx.json`。
 
 <div id="tutorial-end" />
 
@@ -275,15 +278,21 @@ uv run streamlit run web/app.py
 - Base URL: API 地址
 - Model: 模型名称
 
-#### 2. 图像配置
-用于生成视频配图的 AI。
+#### 2. 本地 ComfyUI（用于图像 / TTS / 本地图生视频）
 
-**本地部署（推荐）**  
-- ComfyUI URL: 本地 ComfyUI 服务地址（默认 http://127.0.0.1:8188）
+- **ComfyUI URL**: 本地 ComfyUI 服务地址（默认 `http://127.0.0.1:8188`）
 - 点击「测试连接」确认服务可用
+- 工作流文件位于 `workflows/selfhost/`，命名以 `image_` / `video_` / `tts_` / `analyse_` / `i2v_` 开头会被自动发现
 
-**云端部署**  
-- RunningHub API Key: 云端图像生成服务的密钥
+#### 3. Seedance 云端视频 API（推荐，无需本地 GPU）
+
+字节跳动 Seedance 2.0 通过火山引擎方舟（Volcengine Ark）提供文生视频能力，4–15 秒视频，30–120 秒生成。
+
+- **Seedance API Key**: 火山引擎 ARK API Key（开启 Seedance 时必填）
+- **Seedance Base URL**: 默认 `https://ark.cn-beijing.volces.com/api/v3`，国内用户保持默认即可；海外或走代理可改为其它 region
+- **云端并发限制**: Seedance 等云端 API 的并发上限（1–10）
+
+工作流文件 `workflows/volcengine/video_seedance_2_0.json` 控制模型 ID、分辨率、时长、宽高比、是否带水印等参数（已默认 `watermark: false` 去除字节水印）。
 
 配置完成后点击「保存配置」。
 
@@ -326,11 +335,14 @@ uv run streamlit run web/app.py
 #### 图像生成
 决定 AI 生成什么风格的配图。
 
-**ComfyUI 工作流**  
-- 从下拉菜单选择图像生成工作流
-- 支持本地部署（selfhost）和云端（RunningHub）工作流
-- 默认使用 `image_flux.json`
-- 如果懂 ComfyUI，可以放自己的工作流到 `workflows/` 文件夹
+**图像工作流**
+- 从下拉菜单选择图像生成工作流（仅本地 ComfyUI / selfhost）
+- 默认使用 `selfhost/image_flux.json`
+- 如果懂 ComfyUI，可以放自己的工作流到 `workflows/selfhost/` 文件夹
+
+**视频工作流**
+- 默认使用 `volcengine/video_seedance_2_0.json`（Seedance 2.0 云端 API）
+- 也可切换到 `selfhost/video_wan2.1_fusionx.json`（本地 ComfyUI 部署，需要 GPU）
 
 **图像尺寸**  
 - 设置生成图像的宽度和高度（单位：像素）
@@ -391,7 +403,7 @@ A: **本项目完全支持免费运行！**
 
 - **完全免费方案**: LLM 使用 Ollama（本地运行）+ ComfyUI 本地部署 = 0 元
 - **推荐方案**: LLM 使用通义千问（成本极低，性价比高）+ ComfyUI 本地部署
-- **云端方案**: LLM 使用 OpenAI + 图像使用 RunningHub（费用较高但无需本地环境）
+- **云端方案**: LLM 使用 OpenAI + 视频使用 Seedance（费用较高但无需本地环境）
 
 **选择建议**：本地有显卡建议完全免费方案，否则推荐使用通义千问（性价比高）
 

@@ -295,20 +295,21 @@ class StandardPipeline(LinearVideoPipeline):
         storyboard = ctx.storyboard
         config = ctx.config
         
-        # Check if using RunningHub workflows for parallel processing
-        is_runninghub = (
-            (config.tts_workflow and config.tts_workflow.startswith("runninghub/")) or
-            (config.media_workflow and config.media_workflow.startswith("runninghub/"))
+        # Cloud-API workflows (e.g. Volcengine Seedance) tolerate parallel calls;
+        # selfhost workflows hammer a single GPU and should stay serial.
+        is_cloud_workflow = (
+            (config.tts_workflow and not config.tts_workflow.startswith("selfhost/")) or
+            (config.media_workflow and not config.media_workflow.startswith("selfhost/"))
         )
-        
+
         # Get concurrent limit from config_manager (supports hot reload without restart)
         from pixelle_video.config import config_manager
-        runninghub_concurrent_limit = config_manager.config.comfyui.runninghub_concurrent_limit or 1
-        
-        if is_runninghub and runninghub_concurrent_limit > 1:
-            logger.info(f"🚀 Using parallel processing for RunningHub workflows (max {runninghub_concurrent_limit} concurrent)")
-            
-            semaphore = asyncio.Semaphore(runninghub_concurrent_limit)
+        cloud_concurrent_limit = config_manager.config.comfyui.cloud_concurrent_limit or 1
+
+        if is_cloud_workflow and cloud_concurrent_limit > 1:
+            logger.info(f"🚀 Using parallel processing for cloud workflows (max {cloud_concurrent_limit} concurrent)")
+
+            semaphore = asyncio.Semaphore(cloud_concurrent_limit)
             completed_count = 0
             
             async def process_frame_with_semaphore(i: int, frame: StoryboardFrame):
@@ -364,8 +365,8 @@ class StandardPipeline(LinearVideoPipeline):
             
             logger.info(f"✅ All frames processed in parallel (total duration: {storyboard.total_duration:.2f}s)")
         else:
-            # Serial processing for non-RunningHub workflows
-            logger.info("⚙️ Using serial processing (non-RunningHub workflow)")
+            # Serial processing for selfhost workflows (avoid GPU contention)
+            logger.info("⚙️ Using serial processing (selfhost workflow)")
             
             for i, frame in enumerate(storyboard.frames):
                 base_progress = 0.2
@@ -500,7 +501,7 @@ class StandardPipeline(LinearVideoPipeline):
                     "llm_model": self.core.config.get("llm", {}).get("model", "unknown"),
                     "llm_base_url": self.core.config.get("llm", {}).get("base_url", "unknown"),
                     "comfyui_url": self.core.config.get("comfyui", {}).get("comfyui_url", "unknown"),
-                    "runninghub_enabled": bool(self.core.config.get("comfyui", {}).get("runninghub_api_key")),
+                    "seedance_enabled": bool(self.core.config.get("comfyui", {}).get("seedance", {}).get("api_key")),
                 }
             }
             

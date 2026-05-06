@@ -68,7 +68,6 @@ class TTSService(ComfyBaseService):
         workflow: Optional[str] = None,
         # ComfyUI connection (optional overrides)
         comfyui_url: Optional[str] = None,
-        runninghub_api_key: Optional[str] = None,
         # TTS parameters
         voice: Optional[str] = None,
         speed: Optional[float] = None,
@@ -80,21 +79,20 @@ class TTSService(ComfyBaseService):
     ) -> str:
         """
         Generate speech using local Edge TTS or ComfyUI workflow
-        
+
         Args:
             text: Text to convert to speech
             workflow: Workflow filename (for ComfyUI mode, default: from config)
             comfyui_url: ComfyUI URL (optional, overrides config)
-            runninghub_api_key: RunningHub API key (optional, overrides config)
             voice: Voice ID (for local mode: Edge TTS voice ID; for ComfyUI: workflow-specific)
             speed: Speech speed multiplier (1.0 = normal, >1.0 = faster, <1.0 = slower)
             inference_mode: Override inference mode ("local" or "comfyui", default: from config)
             output_path: Custom output path (auto-generated if None)
             **params: Additional workflow parameters
-        
+
         Returns:
             Generated audio file path
-        
+
         Examples:
             # Local inference (Edge TTS)
             audio_path = await pixelle_video.tts(
@@ -103,17 +101,17 @@ class TTSService(ComfyBaseService):
                 voice="zh-CN-YunjianNeural",
                 speed=1.2
             )
-            
+
             # ComfyUI inference
             audio_path = await pixelle_video.tts(
                 text="你好，世界！",
                 inference_mode="comfyui",
-                workflow="runninghub/tts_edge.json"
+                workflow="selfhost/tts_edge.json"
             )
         """
         # Determine inference mode (param > config)
         mode = inference_mode or self.config.get("inference_mode", "local")
-        
+
         # Route to appropriate implementation
         if mode == "local":
             return await self._call_local_tts(
@@ -125,13 +123,12 @@ class TTSService(ComfyBaseService):
         else:  # comfyui
             # 1. Resolve workflow (returns structured info)
             workflow_info = self._resolve_workflow(workflow=workflow)
-            
+
             # 2. Execute ComfyUI workflow
             return await self._call_comfyui_workflow(
                 workflow_info=workflow_info,
                 text=text,
                 comfyui_url=comfyui_url,
-                runninghub_api_key=runninghub_api_key,
                 voice=voice,
                 speed=speed,
                 output_path=output_path,
@@ -199,7 +196,6 @@ class TTSService(ComfyBaseService):
         workflow_info: dict,
         text: str,
         comfyui_url: Optional[str] = None,
-        runninghub_api_key: Optional[str] = None,
         voice: Optional[str] = None,
         speed: float = 1.0,
         output_path: Optional[str] = None,
@@ -207,17 +203,16 @@ class TTSService(ComfyBaseService):
     ) -> str:
         """
         Generate speech using ComfyUI workflow
-        
+
         Args:
             workflow_info: Workflow info dict from _resolve_workflow()
             text: Text to convert to speech
             comfyui_url: ComfyUI URL
-            runninghub_api_key: RunningHub API key
             voice: Voice ID (workflow-specific)
             speed: Speech speed multiplier (workflow-specific)
             output_path: Custom output path (downloads if URL returned)
             **params: Additional workflow parameters
-        
+
         Returns:
             Generated audio file path (local if output_path provided, otherwise URL)
         """
@@ -242,16 +237,10 @@ class TTSService(ComfyBaseService):
             # Get shared ComfyKit instance (lazy initialization + config hot-reload)
             kit = await self.core._get_or_create_comfykit()
             
-            # Determine what to pass to ComfyKit based on source
-            if workflow_info["source"] == "runninghub" and "workflow_id" in workflow_info:
-                # RunningHub: pass workflow_id
-                workflow_input = workflow_info["workflow_id"]
-                logger.info(f"Executing RunningHub TTS workflow: {workflow_input}")
-            else:
-                # Selfhost: pass file path
-                workflow_input = workflow_info["path"]
-                logger.info(f"Executing selfhost TTS workflow: {workflow_input}")
-            
+            # Selfhost: pass file path to local ComfyUI
+            workflow_input = workflow_info["path"]
+            logger.info(f"Executing selfhost TTS workflow: {workflow_input}")
+
             result = await kit.execute(workflow_input, workflow_params)
             
             # 4. Handle result

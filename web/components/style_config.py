@@ -715,12 +715,12 @@ def render_style_config(pixelle_video):
                 workflows = [wf for wf in all_workflows if "video_" not in wf["key"].lower()]
         
             # Build options for selectbox
-            # Display: "image_flux.json - Runninghub"
-            # Value: "runninghub/image_flux.json"
+            # Display: "image_flux.json - Selfhost"
+            # Value: "selfhost/image_flux.json"
             workflow_options = [wf["display_name"] for wf in workflows]
             workflow_keys = [wf["key"] for wf in workflows]
-        
-            # Default to first option (should be runninghub by sorting)
+
+            # Default to first option (alphabetically sorted)
             default_workflow_index = 0
         
             # If user has a saved preference in config, try to match it
@@ -739,12 +739,12 @@ def render_style_config(pixelle_video):
                 key="media_workflow_select"
             )
         
-            # Get the actual workflow key (e.g., "runninghub/image_flux.json")
+            # Get the actual workflow key (e.g., "selfhost/image_flux.json")
             if workflow_options:
                 workflow_selected_index = workflow_options.index(workflow_display)
                 workflow_key = workflow_keys[workflow_selected_index]
             else:
-                workflow_key = "runninghub/image_flux.json"  # fallback
+                workflow_key = "selfhost/image_flux.json"  # fallback
             
             # Check and warn for selfhost media workflow (auto popup if not confirmed)
             check_and_warn_selfhost_workflow(workflow_key)

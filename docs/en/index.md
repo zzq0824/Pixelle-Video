@@ -65,7 +65,7 @@ Ready to get started? Just three steps:
     
     - **Completely Free**: Use Ollama (local) + Local ComfyUI = $0
     - **Recommended**: Use Qianwen LLM (≈$0.01-0.05 per 3-scene video) + Local ComfyUI
-    - **Cloud Solution**: Use OpenAI + RunningHub (higher cost but no local setup required)
+    - **Cloud Solution**: Use OpenAI + Seedance (higher cost but no local setup required)
     
     **Recommendation**: If you have a local GPU, go with the completely free solution. Otherwise, we recommend Qianwen for best value.
 

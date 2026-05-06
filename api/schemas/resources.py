@@ -22,10 +22,11 @@ class WorkflowInfo(BaseModel):
     """Workflow information"""
     name: str = Field(..., description="Workflow filename")
     display_name: str = Field(..., description="Display name with source info")
-    source: str = Field(..., description="Source (runninghub or selfhost)")
+    source: str = Field(..., description="Source (e.g. selfhost, volcengine)")
     path: str = Field(..., description="Full path to workflow file")
     key: str = Field(..., description="Workflow key (source/name)")
-    workflow_id: Optional[str] = Field(None, description="RunningHub workflow ID (if applicable)")
+    workflow_id: Optional[str] = Field(None, description="External workflow ID (if applicable)")
+    provider_config: Optional[dict] = Field(None, description="Provider-specific config payload (e.g. for Seedance)")
 
 
 class WorkflowListResponse(BaseModel):

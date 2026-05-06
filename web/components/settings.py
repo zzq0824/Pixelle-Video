@@ -16,7 +16,7 @@ System settings component for web UI
 
 import streamlit as st
 
-from web.i18n import tr, get_language
+from web.i18n import tr
 from web.utils.streamlit_helpers import safe_rerun
 from pixelle_video.config import config_manager
 
@@ -244,51 +244,34 @@ def render_advanced_settings():
                         st.error(f"{tr('status.connection_failed')}: {str(e)}")
                 
                 st.markdown("---")
-                
-                # RunningHub cloud configuration
+
+                # Cloud video API: Volcengine Seedance
                 st.markdown(f"**{tr('settings.comfyui.cloud_title')}**")
-                runninghub_api_key = st.text_input(
-                    tr("settings.comfyui.runninghub_api_key"),
-                    value=comfyui_config.get("runninghub_api_key", ""),
+                seedance_cfg = (
+                    config_manager.config.comfyui.seedance.model_dump()
+                    if hasattr(config_manager.config.comfyui, "seedance") else {}
+                )
+                seedance_api_key = st.text_input(
+                    tr("settings.comfyui.seedance_api_key"),
+                    value=seedance_cfg.get("api_key") or "",
                     type="password",
-                    help=tr("settings.comfyui.runninghub_api_key_help"),
-                    key="runninghub_api_key_input"
+                    help=tr("settings.comfyui.seedance_api_key_help"),
+                    key="seedance_api_key_input"
                 )
-                st.caption(
-                    f"{tr('settings.comfyui.runninghub_hint')} "
-                    f"[{tr('settings.comfyui.runninghub_get_api_key')}]"
-                    f"(https://www.runninghub{'.cn' if get_language() == 'zh_CN' else '.ai'}/?inviteCode=bozpdlbj)"
+                seedance_base_url = st.text_input(
+                    tr("settings.comfyui.seedance_base_url"),
+                    value=seedance_cfg.get("base_url") or "https://ark.cn-beijing.volces.com/api/v3",
+                    help=tr("settings.comfyui.seedance_base_url_help"),
+                    key="seedance_base_url_input"
                 )
-                
-                # RunningHub concurrent limit and instance type (in one row)
-                limit_col, instance_col = st.columns(2)
-                with limit_col:
-                    runninghub_concurrent_limit = st.number_input(
-                        tr("settings.comfyui.runninghub_concurrent_limit"),
-                        min_value=1,
-                        max_value=10,
-                        value=comfyui_config.get("runninghub_concurrent_limit", 1),
-                        help=tr("settings.comfyui.runninghub_concurrent_limit_help"),
-                        key="runninghub_concurrent_limit_input"
-                    )
-                with instance_col:
-                    # Check if instance type is "plus" (48G VRAM enabled)
-                    current_instance_type = comfyui_config.get("runninghub_instance_type") or ""
-                    is_plus_enabled = current_instance_type == "plus"
-                    # Instance type options with i18n
-                    instance_options = [
-                        tr("settings.comfyui.runninghub_instance_24g"),
-                        tr("settings.comfyui.runninghub_instance_48g"),
-                    ]
-                    runninghub_instance_type_display = st.selectbox(
-                        tr("settings.comfyui.runninghub_instance_type"),
-                        options=instance_options,
-                        index=1 if is_plus_enabled else 0,
-                        help=tr("settings.comfyui.runninghub_instance_type_help"),
-                        key="runninghub_instance_type_input"
-                    )
-                    # Convert display value back to actual value
-                    runninghub_48g_enabled = runninghub_instance_type_display == tr("settings.comfyui.runninghub_instance_48g")
+                cloud_concurrent_limit = st.number_input(
+                    tr("settings.comfyui.cloud_concurrent_limit"),
+                    min_value=1,
+                    max_value=10,
+                    value=comfyui_config.get("cloud_concurrent_limit", 1),
+                    help=tr("settings.comfyui.cloud_concurrent_limit_help"),
+                    key="cloud_concurrent_limit_input"
+                )
         
         # ====================================================================
         # Action Buttons (full width at bottom)
@@ -305,16 +288,22 @@ def render_advanced_settings():
                     else:
                         config_manager.set_llm_config(llm_api_key, llm_base_url, llm_model)
                     
-                    # Save ComfyUI configuration (optional fields, always save what's provided)
-                    # Convert checkbox to instance type: True -> "plus", False -> ""
-                    instance_type = "plus" if runninghub_48g_enabled else ""
+                    # Save ComfyUI configuration (selfhost url + cloud concurrent limit)
                     config_manager.set_comfyui_config(
                         comfyui_url=comfyui_url if comfyui_url else None,
                         comfyui_api_key=comfyui_api_key if comfyui_api_key else None,
-                        runninghub_api_key=runninghub_api_key if runninghub_api_key else None,
-                        runninghub_concurrent_limit=int(runninghub_concurrent_limit),
-                        runninghub_instance_type=instance_type
+                        cloud_concurrent_limit=int(cloud_concurrent_limit),
                     )
+
+                    # Save Seedance configuration via deep merge update
+                    config_manager.update({
+                        "comfyui": {
+                            "seedance": {
+                                "api_key": seedance_api_key or None,
+                                "base_url": seedance_base_url or "https://ark.cn-beijing.volces.com/api/v3",
+                            }
+                        }
+                    })
                     
                     # Only save to file if LLM config is valid
                     if llm_api_key and llm_base_url and llm_model:

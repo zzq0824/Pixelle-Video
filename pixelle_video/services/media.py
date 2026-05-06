@@ -115,7 +115,6 @@ class MediaService(ComfyBaseService):
         media_type: str = "image",  # "image" or "video"
         # ComfyUI connection (optional overrides)
         comfyui_url: Optional[str] = None,
-        runninghub_api_key: Optional[str] = None,
         # Common workflow parameters
         width: Optional[int] = None,
         height: Optional[int] = None,
@@ -129,16 +128,15 @@ class MediaService(ComfyBaseService):
     ) -> MediaResult:
         """
         Generate media (image or video) using workflow
-        
+
         Media type must be specified explicitly via media_type parameter.
         Returns a MediaResult object containing media type and URL.
-        
+
         Args:
             prompt: Media generation prompt
             workflow: Workflow filename (default: from config or "image_flux.json")
             media_type: Type of media to generate - "image" or "video" (default: "image")
             comfyui_url: ComfyUI URL (optional, overrides config)
-            runninghub_api_key: RunningHub API key (optional, overrides config)
             width: Media width
             height: Media height
             duration: Target video duration in seconds (only for video workflows, typically from TTS audio duration)
@@ -224,22 +222,29 @@ class MediaService(ComfyBaseService):
         workflow_params.update(params)
         
         logger.debug(f"Workflow parameters: {workflow_params}")
-        
-        # 4. Execute workflow using shared ComfyKit instance from core
+
+        # 4a. External-API providers (Volcengine Seedance, etc.) bypass ComfyKit
+        if workflow_info.get("source") == "volcengine":
+            from pixelle_video.services.seedance_service import SeedanceVideoClient
+
+            seedance_cfg = self.global_config.get("seedance", {}) or {}
+            client = SeedanceVideoClient(seedance_cfg)
+            return await client.generate(
+                prompt=prompt,
+                provider_config=workflow_info.get("provider_config", {}),
+                duration=duration,
+                width=width,
+                height=height,
+            )
+
+        # 4b. Execute workflow using shared ComfyKit instance from core (selfhost)
         try:
             # Get shared ComfyKit instance (lazy initialization + config hot-reload)
             kit = await self.core._get_or_create_comfykit()
-            
-            # Determine what to pass to ComfyKit based on source
-            if workflow_info["source"] == "runninghub" and "workflow_id" in workflow_info:
-                # RunningHub: pass workflow_id (ComfyKit will use runninghub backend)
-                workflow_input = workflow_info["workflow_id"]
-                logger.info(f"Executing RunningHub workflow: {workflow_input}")
-            else:
-                # Selfhost: pass file path (ComfyKit will use local ComfyUI)
-                workflow_input = workflow_info["path"]
-                logger.info(f"Executing selfhost workflow: {workflow_input}")
-            
+
+            workflow_input = workflow_info["path"]
+            logger.info(f"Executing selfhost workflow: {workflow_input}")
+
             result = await kit.execute(workflow_input, workflow_params)
             
             # 5. Handle result based on specified media_type

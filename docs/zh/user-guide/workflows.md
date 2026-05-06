@@ -14,7 +14,7 @@ Pixelle-Video 基于 ComfyUI 架构，支持自定义工作流。
 
 ### TTS 工作流
 
-位于 `workflows/selfhost/` 或 `workflows/runninghub/`
+位于 `workflows/selfhost/` 或 `workflows/selfhost/`
 
 用于文本转语音（Text-to-Speech），支持多种 TTS 引擎：
 - Edge-TTS
@@ -23,7 +23,7 @@ Pixelle-Video 基于 ComfyUI 架构，支持自定义工作流。
 
 ### 图像生成工作流
 
-位于 `workflows/selfhost/` 或 `workflows/runninghub/`
+位于 `workflows/selfhost/` 或 `workflows/selfhost/`
 
 用于生成静态图像作为视频背景：
 - FLUX 系列模型
@@ -32,14 +32,14 @@ Pixelle-Video 基于 ComfyUI 架构，支持自定义工作流。
 
 ### 视频生成工作流
 
-位于 `workflows/selfhost/` 或 `workflows/runninghub/`
+位于 `workflows/selfhost/` 或 `workflows/selfhost/`
 
 **新功能**：支持 AI 视频生成，创建动态视频内容。
 
 **预置工作流**：
-- `runninghub/video_wan2.1_fusionx.json`: 云端工作流（推荐）
+- `volcengine/video_seedance_2_0.json`: 云端工作流（推荐）
   - 基于 WAN 2.1 模型
-  - 无需本地环境，通过 RunningHub API 调用
+  - 无需本地环境，通过 Volcengine ARK API 调用
   - 支持文本到视频（Text-to-Video）
   
 - `selfhost/video_wan2.1_fusionx.json`: 本地工作流

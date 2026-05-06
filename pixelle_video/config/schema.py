@@ -68,16 +68,27 @@ class VideoSubConfig(BaseModel):
     )
 
 
+class SeedanceConfig(BaseModel):
+    """Volcengine Ark Seedance video generation configuration"""
+    api_key: Optional[str] = Field(default=None, description="Volcengine ARK API key")
+    base_url: str = Field(
+        default="https://ark.cn-beijing.volces.com/api/v3",
+        description="Volcengine Ark API base URL (override for proxy / non-default region)"
+    )
+    poll_interval: float = Field(default=5.0, ge=1.0, le=30.0, description="Poll interval in seconds")
+    timeout: float = Field(default=600.0, description="Total wait timeout in seconds")
+    request_timeout: float = Field(default=30.0, description="Per-HTTP-call timeout in seconds")
+
+
 class ComfyUIConfig(BaseModel):
     """ComfyUI configuration (includes global settings and service-specific configs)"""
     comfyui_url: str = Field(default="http://127.0.0.1:8188", description="ComfyUI Server URL")
     comfyui_api_key: Optional[str] = Field(default=None, description="ComfyUI API Key (optional)")
-    runninghub_api_key: Optional[str] = Field(default=None, description="RunningHub API Key (optional)")
-    runninghub_concurrent_limit: int = Field(default=1, ge=1, le=10, description="RunningHub concurrent execution limit (1-10)")
-    runninghub_instance_type: Optional[str] = Field(default=None, description="RunningHub instance type (optional, set to 'plus' for 48GB VRAM)")
+    cloud_concurrent_limit: int = Field(default=1, ge=1, le=10, description="Cloud-API concurrent execution limit (1-10), applied to non-selfhost workflows like Seedance")
     tts: TTSSubConfig = Field(default_factory=TTSSubConfig, description="TTS-specific configuration")
     image: ImageSubConfig = Field(default_factory=ImageSubConfig, description="Image-specific configuration")
     video: VideoSubConfig = Field(default_factory=VideoSubConfig, description="Video-specific configuration")
+    seedance: SeedanceConfig = Field(default_factory=SeedanceConfig, description="Volcengine Seedance configuration")
 
 
 class TemplateConfig(BaseModel):

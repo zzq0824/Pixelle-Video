@@ -14,7 +14,7 @@ Pixelle-Video is built on the ComfyUI architecture and supports custom workflows
 
 ### TTS Workflows
 
-Located in `workflows/selfhost/` or `workflows/runninghub/`
+Located in `workflows/selfhost/` or `workflows/selfhost/`
 
 Used for Text-to-Speech, supporting various TTS engines:
 - Edge-TTS
@@ -23,7 +23,7 @@ Used for Text-to-Speech, supporting various TTS engines:
 
 ### Image Generation Workflows
 
-Located in `workflows/selfhost/` or `workflows/runninghub/`
+Located in `workflows/selfhost/` or `workflows/selfhost/`
 
 Used for generating static images as video backgrounds:
 - FLUX series models
@@ -32,14 +32,14 @@ Used for generating static images as video backgrounds:
 
 ### Video Generation Workflows
 
-Located in `workflows/selfhost/` or `workflows/runninghub/`
+Located in `workflows/selfhost/` or `workflows/selfhost/`
 
 **New Feature**: Supports AI video generation to create dynamic video content.
 
 **Preset Workflows**:
-- `runninghub/video_wan2.1_fusionx.json`: Cloud workflow (recommended)
+- `volcengine/video_seedance_2_0.json`: Cloud workflow (recommended)
   - Based on WAN 2.1 model
-  - No local setup required, accessed via RunningHub API
+  - No local setup required, accessed via Volcengine ARK API
   - Supports Text-to-Video generation
   
 - `selfhost/video_wan2.1_fusionx.json`: Local workflow

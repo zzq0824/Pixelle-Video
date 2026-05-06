@@ -15,16 +15,15 @@ llm:
 comfyui:
   comfyui_url: "http://127.0.0.1:8188"
   comfyui_api_key: ""  # ComfyUI API key (optional)
-  runninghub_api_key: ""
-  runninghub_concurrent_limit: 1  # Concurrent limit (1-10)
-  runninghub_instance_type: ""  # Instance type (optional, set to "plus" for 48GB VRAM)
-  
+  seedance.api_key: ""
+  cloud_concurrent_limit: 1  # Concurrent limit (1-10)
+    
   image:
-    default_workflow: "runninghub/image_flux.json"
+    default_workflow: "selfhost/image_flux.json"
     prompt_prefix: "Minimalist illustration style"
   
   video:
-    default_workflow: "runninghub/video_wan2.1_fusionx.json"
+    default_workflow: "volcengine/video_seedance_2_0.json"
     prompt_prefix: "Minimalist illustration style"
   
   tts:
@@ -51,12 +50,11 @@ template:
 - `comfyui_url`: Local ComfyUI address (default `http://127.0.0.1:8188`)
 - `comfyui_api_key`: ComfyUI API key (optional, for [Comfy Platform](https://platform.comfy.org/profile/api-keys))
 
-### RunningHub Cloud Configuration
+### Cloud API (Seedance) Configuration
 
-- `runninghub_api_key`: RunningHub API key (required for cloud workflows)
-- `runninghub_concurrent_limit`: Concurrent execution limit (1-10, default 1 for regular members)
-- `runninghub_instance_type`: Instance type (optional)
-  - Empty or unset: Use 24GB VRAM machine
+- `seedance.api_key`: Volcengine ARK API key (required for cloud workflows)
+- `cloud_concurrent_limit`: Concurrent execution limit (1-10, default 1 for regular members)
+- `  - Empty or unset: Use 24GB VRAM machine
   - `"plus"`: Use 48GB VRAM machine (suitable for large video generation)
 
 ### Image Configuration
@@ -67,7 +65,7 @@ template:
 ### Video Configuration
 
 - `default_workflow`: Default video generation workflow
-  - `runninghub/video_wan2.1_fusionx.json`: Cloud workflow (recommended, no local setup required)
+  - `volcengine/video_seedance_2_0.json`: Cloud workflow (recommended, no local setup required)
   - `selfhost/video_wan2.1_fusionx.json`: Local workflow (requires local ComfyUI support)
 - `prompt_prefix`: Video prompt prefix (controls video generation style)
 

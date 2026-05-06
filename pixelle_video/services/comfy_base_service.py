@@ -58,7 +58,7 @@ class ComfyBaseService:
         comfyui_config = config.get("comfyui", {})
         self.config = comfyui_config.get(service_name, {})
         
-        # Global ComfyUI config (for comfyui_url and runninghub_api_key)
+        # Global ComfyUI config (for comfyui_url and provider-specific keys)
         self.global_config = comfyui_config
         
         self.service_name = service_name
@@ -84,12 +84,12 @@ class ComfyBaseService:
                     "key": "selfhost/image_flux.json"
                 },
                 {
-                    "name": "image_flux.json",
-                    "display_name": "image_flux.json - Runninghub",
-                    "source": "runninghub",
-                    "path": "workflows/runninghub/image_flux.json",
-                    "key": "runninghub/image_flux.json",
-                    "workflow_id": "123456"
+                    "name": "video_seedance_2_0.json",
+                    "display_name": "video_seedance_2_0.json - Volcengine",
+                    "source": "volcengine",
+                    "path": "workflows/volcengine/video_seedance_2_0.json",
+                    "key": "volcengine/video_seedance_2_0.json",
+                    "provider_config": {"model": "doubao-seedance-2-0-260128"}
                 }
             ]
         """
@@ -136,17 +136,17 @@ class ComfyBaseService:
         
         Args:
             file_path: Path to workflow JSON file
-            source: Source directory name (e.g., "selfhost", "runninghub")
+            source: Source directory name (e.g., "selfhost", "volcengine")
         
         Returns:
             Workflow info dict with structure:
             {
                 "name": "image_flux.json",
                 "display_name": "image_flux.json - Runninghub",
-                "source": "runninghub",
-                "path": "workflows/runninghub/image_flux.json",
-                "key": "runninghub/image_flux.json",
-                "workflow_id": "123456"  # Only for RunningHub
+                "source": "volcengine",
+                "path": "workflows/volcengine/video_seedance_2_0.json",
+                "key": "volcengine/video_seedance_2_0.json",
+                "provider_config": {"model": "doubao-seedance-2-0-260128"}
             }
         """
         with open(file_path, 'r', encoding='utf-8') as f:
@@ -161,12 +161,18 @@ class ComfyBaseService:
             "key": f"{source}/{file_path.name}"
         }
         
-        # Check if it's a wrapper format (RunningHub, etc.)
+        # Check if it's a wrapper format (e.g. Volcengine/Seedance)
         if "source" in content:
-            # Wrapper format: {"source": "runninghub", "workflow_id": "xxx", ...}
+            # Wrapper format: {"source": "<provider>", ...}
+            # Override directory-derived source with the explicit one in the file
+            # and pass the entire payload through as provider_config so that
+            # external-API providers (e.g. Volcengine Seedance) can read their
+            # own model / resolution / duration defaults.
+            workflow_info["source"] = content["source"]
+            workflow_info["provider_config"] = content
             if "workflow_id" in content:
                 workflow_info["workflow_id"] = content["workflow_id"]
-        
+
         return workflow_info
     
     def _get_default_workflow(self) -> str:
@@ -174,7 +180,7 @@ class ComfyBaseService:
         Get default workflow from config (required, no fallback)
         
         Returns:
-            Default workflow key (e.g., "runninghub/image_flux.json")
+            Default workflow key (e.g., "selfhost/image_flux.json")
         
         Raises:
             ValueError: If default_workflow not configured
@@ -195,7 +201,7 @@ class ComfyBaseService:
         Resolve workflow key to workflow info
         
         Args:
-            workflow: Workflow key (e.g., "runninghub/image_flux.json")
+            workflow: Workflow key (e.g., "selfhost/image_flux.json")
                      If None, uses default from config
         
         Returns:
@@ -203,12 +209,12 @@ class ComfyBaseService:
             {
                 "name": "image_flux.json",
                 "display_name": "image_flux.json - Runninghub",
-                "source": "runninghub",
-                "path": "workflows/runninghub/image_flux.json",
-                "key": "runninghub/image_flux.json",
-                "workflow_id": "123456"  # Only for RunningHub
+                "source": "volcengine",
+                "path": "workflows/volcengine/video_seedance_2_0.json",
+                "key": "volcengine/video_seedance_2_0.json",
+                "provider_config": {"model": "doubao-seedance-2-0-260128"}
             }
-        
+
         Raises:
             ValueError: If workflow not found
         """
@@ -236,50 +242,27 @@ class ComfyBaseService:
     def _prepare_comfykit_config(
         self,
         comfyui_url: Optional[str] = None,
-        runninghub_api_key: Optional[str] = None,
-        runninghub_instance_type: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         Prepare ComfyKit configuration
-        
+
         Args:
             comfyui_url: ComfyUI URL (optional, overrides config)
-            runninghub_api_key: RunningHub API key (optional, overrides config)
-            runninghub_instance_type: RunningHub instance type (optional, overrides config)
-        
+
         Returns:
             ComfyKit configuration dict
         """
         kit_config = {}
-        
+
         # ComfyUI URL (priority: param > global config > env > default)
         final_comfyui_url = (
-            comfyui_url 
+            comfyui_url
             or self.global_config.get("comfyui_url")
             or os.getenv("COMFYUI_BASE_URL")
             or "http://127.0.0.1:8188"
         )
         kit_config["comfyui_url"] = final_comfyui_url
-        
-        # RunningHub API key (priority: param > global config > env)
-        final_rh_key = (
-            runninghub_api_key
-            or self.global_config.get("runninghub_api_key")
-            or os.getenv("RUNNINGHUB_API_KEY")
-        )
-        if final_rh_key:
-            kit_config["runninghub_api_key"] = final_rh_key
-        
-        # RunningHub instance type (priority: param > global config > env)
-        # Only pass if non-empty value
-        final_instance_type = (
-            runninghub_instance_type
-            or self.global_config.get("runninghub_instance_type")
-            or os.getenv("RUNNINGHUB_INSTANCE_TYPE")
-        )
-        if final_instance_type and final_instance_type.strip():
-            kit_config["runninghub_instance_type"] = final_instance_type
-        
+
         logger.debug(f"ComfyKit config: {kit_config}")
         return kit_config
     
@@ -296,9 +279,9 @@ class ComfyBaseService:
             #     {
             #         "name": "image_flux.json",
             #         "display_name": "image_flux.json - Runninghub",
-            #         "source": "runninghub",
-            #         "path": "workflows/runninghub/image_flux.json",
-            #         "key": "runninghub/image_flux.json",
+            #         "source": "selfhost",
+            #         "path": "workflows/selfhost/image_flux.json",
+            #         "key": "selfhost/image_flux.json",
             #         "workflow_id": "123456"
             #     },
             #     ...
@@ -312,7 +295,7 @@ class ComfyBaseService:
         List available workflow keys
         
         Returns:
-            List of available workflow keys (e.g., ["runninghub/image_flux.json", ...])
+            List of available workflow keys (e.g., ["selfhost/image_flux.json", ...])
         
         Example:
             print(f"Available workflows: {service.available}")

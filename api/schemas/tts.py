@@ -22,8 +22,8 @@ class TTSSynthesizeRequest(BaseModel):
     """TTS synthesis request"""
     text: str = Field(..., description="Text to synthesize")
     workflow: Optional[str] = Field(
-        None, 
-        description="TTS workflow key (e.g., 'runninghub/tts_edge.json' or 'selfhost/tts_edge.json'). If not specified, uses default workflow from config."
+        None,
+        description="TTS workflow key (e.g., 'selfhost/tts_edge.json'). If not specified, uses default workflow from config."
     )
     ref_audio: Optional[str] = Field(
         None, 
@@ -38,7 +38,7 @@ class TTSSynthesizeRequest(BaseModel):
         json_schema_extra = {
             "example": {
                 "text": "Hello, welcome to Pixelle-Video!",
-                "workflow": "runninghub/tts_edge.json",
+                "workflow": "selfhost/tts_edge.json",
                 "ref_audio": None
             }
         }

@@ -186,43 +186,18 @@ class AssetBasedPipelineUI(PipelineUI):
                 st.markdown(f"**{tr('help.how')}**")
                 st.markdown(tr("asset_based.source.how"))
             
-            source_options = {
-                "runninghub": tr("asset_based.source.runninghub"),
-                "selfhost": tr("asset_based.source.selfhost")
-            }
-            
-            # Check if RunningHub API key is configured
+            # Selfhost is now the only source for asset analysis workflows
             comfyui_config = config_manager.get_comfyui_config()
-            has_runninghub = bool(comfyui_config.get("runninghub_api_key"))
             has_selfhost = bool(comfyui_config.get("comfyui_url"))
-            
-            # Default to runninghub always
-            default_source_index = 0
-            
-            source = st.radio(
-                tr("asset_based.source.select"),
-                options=list(source_options.keys()),
-                format_func=lambda x: source_options[x],
-                index=default_source_index,
-                horizontal=True,
-                key="asset_source",
-                label_visibility="collapsed"
-            )
-            
-            # Show hint based on selection
-            if source == "runninghub":
-                if not has_runninghub:
-                    st.warning(tr("asset_based.source.runninghub_not_configured"))
-                else:
-                    st.info(tr("asset_based.source.runninghub_hint"))
+            source = "selfhost"
+
+            if not has_selfhost:
+                st.warning(tr("asset_based.source.selfhost_not_configured"))
             else:
-                if not has_selfhost:
-                    st.warning(tr("asset_based.source.selfhost_not_configured"))
-                else:
-                    st.info(tr("asset_based.source.selfhost_hint"))
-                    # Check and warn for selfhost mode (auto popup if not confirmed)
-                    # Use analyse_image.json as representative workflow
-                    check_and_warn_selfhost_workflow("selfhost/analyse_image.json")
+                st.info(tr("asset_based.source.selfhost_hint"))
+                # Check and warn for selfhost mode (auto popup if not confirmed)
+                # Use analyse_image.json as representative workflow
+                check_and_warn_selfhost_workflow("selfhost/analyse_image.json")
         
         # TTS configuration
         with st.container(border=True):
@@ -383,7 +358,6 @@ class AssetBasedPipelineUI(PipelineUI):
                         video_title=video_params.get("video_title", ""),
                         intent=video_params.get("intent"),
                         duration=video_params.get("duration", 30),
-                        source=video_params.get("source", "runninghub"),
                         bgm_path=video_params.get("bgm_path"),
                         bgm_volume=video_params.get("bgm_volume", 0.2),
                         bgm_mode=video_params.get("bgm_mode", "loop"),

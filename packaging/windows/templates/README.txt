@@ -26,7 +26,7 @@ You can launch multiple instances - each will use a different port automatically
 2. Click on "Settings" in the Web UI to configure:
    - LLM API Key (OpenAI/Qwen/DeepSeek/etc)
    - LLM Base URL and Model
-   - ComfyUI settings (use RunningHub or local ComfyUI)
+   - ComfyUI settings (local ComfyUI for image / TTS workflows)
 3. Click "Save Config" to save your settings
 4. Configuration will be automatically saved to config.yaml
 
@@ -43,7 +43,7 @@ Configuration is done through the Web UI:
    - LLM Base URL: LLM API endpoint
    - LLM Model: Model name (e.g., gpt-4o, qwen-max)
    - ComfyUI URL: For local ComfyUI (default: http://127.0.0.1:8188)
-   - RunningHub API Key: For cloud image generation (optional)
+   - Volcengine ARK API Key: For Seedance video generation (optional)
 4. Click "Save Config" to save
 
 The configuration will be automatically saved to Pixelle-Video/config.yaml.

@@ -445,7 +445,7 @@ def list_resource_dirs(
         # Returns: ["1080x1080", "1080x1920", "1920x1080"]
         
         >>> list_resource_dirs("workflows")
-        # Returns: ["runninghub", "selfhost"]
+        # Returns: ["selfhost", "volcengine"]
     """
     dirs = set()
     

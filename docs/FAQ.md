@@ -17,12 +17,12 @@ If you want to integrate your own ComfyUI workflows, please follow these specifi
     -   **Video Workflows**: Prefix must be `video_`
     -   **TTS Workflows**: Prefix must be `tts_`
 
-### How to debug RunningHub workflows locally?
+### How to debug Seedance workflows locally?
 
-If you want to test workflows locally that were originally intended for RunningHub cloud usage:
+If you want to test workflows locally that were originally intended for Seedance cloud usage:
 
-1.  **Get ID**: Open the RunningHub workflow file and find the ID.
-2.  **Load Workflow**: Paste the ID onto the end of the RunningHub URL (e.g., https://www.runninghub.cn/workflow/1983513964837543938) to enter the workflow page.
+1.  **Get ID**: Open the Seedance workflow file and find the ID.
+2.  **Load Workflow**: Paste the ID onto the end of the Seedance URL (e.g., https://www.volcengine.cn/workflow/1983513964837543938) to enter the workflow page.
   <img src="https://github.com/user-attachments/assets/e5330b3a-5475-44f2-81e4-057d33fdf71b" width="600" alt="参数绑定示例" />
 
 
