@@ -161,12 +161,18 @@ class ComfyBaseService:
             "key": f"{source}/{file_path.name}"
         }
         
-        # Check if it's a wrapper format (RunningHub, etc.)
+        # Check if it's a wrapper format (RunningHub, Volcengine/Seedance, etc.)
         if "source" in content:
-            # Wrapper format: {"source": "runninghub", "workflow_id": "xxx", ...}
+            # Wrapper format: {"source": "<provider>", ...}
+            # Override directory-derived source with the explicit one in the file
+            # and pass the entire payload through as provider_config so that
+            # external-API providers (e.g. Volcengine Seedance) can read their
+            # own model / resolution / duration defaults.
+            workflow_info["source"] = content["source"]
+            workflow_info["provider_config"] = content
             if "workflow_id" in content:
                 workflow_info["workflow_id"] = content["workflow_id"]
-        
+
         return workflow_info
     
     def _get_default_workflow(self) -> str:

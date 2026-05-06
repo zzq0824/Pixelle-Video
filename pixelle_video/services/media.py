@@ -224,8 +224,22 @@ class MediaService(ComfyBaseService):
         workflow_params.update(params)
         
         logger.debug(f"Workflow parameters: {workflow_params}")
-        
-        # 4. Execute workflow using shared ComfyKit instance from core
+
+        # 4a. External-API providers (Volcengine Seedance, etc.) bypass ComfyKit
+        if workflow_info.get("source") == "volcengine":
+            from pixelle_video.services.seedance_service import SeedanceVideoClient
+
+            seedance_cfg = self.global_config.get("seedance", {}) or {}
+            client = SeedanceVideoClient(seedance_cfg)
+            return await client.generate(
+                prompt=prompt,
+                provider_config=workflow_info.get("provider_config", {}),
+                duration=duration,
+                width=width,
+                height=height,
+            )
+
+        # 4b. Execute workflow using shared ComfyKit instance from core
         try:
             # Get shared ComfyKit instance (lazy initialization + config hot-reload)
             kit = await self.core._get_or_create_comfykit()

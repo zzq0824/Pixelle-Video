@@ -1,0 +1,9 @@
+{
+  "source": "volcengine",
+  "provider": "seedance",
+  "model": "doubao-seedance-2-0-260128",
+  "resolution": "720p",
+  "duration": 5,
+  "ratio": "16:9",
+  "watermark": false
+}

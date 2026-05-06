@@ -25,7 +25,16 @@ comfyui:
   # Note for Docker users: Use host.docker.internal:8188 (Mac/Windows) or host IP address (Linux)
   runninghub_api_key: ""  # RunningHub API key (required for runninghub workflows)
   runninghub_concurrent_limit: 1  # Concurrent execution limit for RunningHub (1-10, default 1 for regular members)
-  
+
+  # Volcengine Seedance (ByteDance) configuration
+  # Required when using workflows under workflows/volcengine/ (e.g. video_seedance_2_0.json)
+  seedance:
+    api_key: ""                                          # Volcengine ARK API key
+    base_url: "https://ark.cn-beijing.volces.com/api/v3" # Override for proxy / non-default region
+    poll_interval: 5.0                                   # Poll interval in seconds
+    timeout: 600.0                                       # Total wait timeout in seconds
+    request_timeout: 30.0                                # Per-HTTP-call timeout in seconds
+
   # TTS-specific configuration
   tts:
     default_workflow: selfhost/tts_edge.json  # TTS workflow to use
@@ -45,6 +54,7 @@ comfyui:
     # Required: Default workflow to use (no fallback)
     # Options: runninghub/video_wan2.1_fusionx.json (recommended, no local setup)
     #          selfhost/video_wan2.1_fusionx.json (requires local ComfyUI)
+    #          volcengine/video_seedance_2_0.json (Seedance API, requires comfyui.seedance.api_key)
     default_workflow: runninghub/video_wan2.1_fusionx.json
     
     # Video prompt prefix (optional)
