@@ -233,7 +233,11 @@ async def test_succeeded_without_url_raises():
 
 
 @pytest.mark.asyncio
-async def test_prompt_is_appended_with_volcengine_params():
+async def test_payload_uses_top_level_body_fields():
+    """Volcengine Ark expects resolution/ratio/duration/watermark/seed as top-level
+    JSON body fields, not inline `--key value` prompt suffixes (those are silently
+    ignored by the official endpoint, which is what was causing watermarks to leak
+    onto generated videos)."""
     captured = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
@@ -259,15 +263,47 @@ async def test_prompt_is_appended_with_volcengine_params():
                 "resolution": "480p",
                 "duration": 4,
                 "ratio": "1:1",
-                "watermark": True,
+                "watermark": False,
                 "seed": 42,
             },
         )
 
-    body = captured["body"].decode()
-    assert "doubao-seedance-2-0-fast-260128" in body
-    assert "--resolution 480p" in body
-    assert "--duration 4" in body
-    assert "--ratio 1:1" in body
-    assert "--watermark true" in body
-    assert "--seed 42" in body
+    import json as _json
+    body = _json.loads(captured["body"].decode())
+    assert body["model"] == "doubao-seedance-2-0-fast-260128"
+    assert body["resolution"] == "480p"
+    assert body["duration"] == 4
+    assert body["ratio"] == "1:1"
+    assert body["watermark"] is False
+    assert body["seed"] == 42
+    # Prompt should remain clean — no inline --key value suffixes
+    assert body["content"][0]["text"] == "cat playing piano"
+    assert "--watermark" not in body["content"][0]["text"]
+
+
+@pytest.mark.asyncio
+async def test_watermark_defaults_to_false_when_unset():
+    """Default workflow JSON sets watermark=false; verify it propagates."""
+    captured = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            captured["body"] = request.read()
+            return httpx.Response(200, json={"id": "cgt-7"})
+        return httpx.Response(
+            200,
+            json={
+                "id": "cgt-7",
+                "status": "succeeded",
+                "content": {"video_url": "https://cdn/v.mp4"},
+            },
+        )
+
+    transport = httpx.MockTransport(handler)
+    client, _ = _client_with_transport(transport)
+    with _PatchAsyncClient(transport):
+        await client.generate(prompt="test", provider_config={})  # no watermark key
+
+    import json as _json
+    body = _json.loads(captured["body"].decode())
+    assert body["watermark"] is False

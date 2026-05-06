@@ -17,6 +17,12 @@ Calls ByteDance's Seedance video generation models via Volcengine Ark
 (https://ark.cn-beijing.volces.com/api/v3). Uses async polling pattern:
 POST create task -> GET poll status -> return remote video URL.
 
+Volcengine Ark accepts model / content / resolution / ratio / duration /
+watermark / seed as top-level fields in the JSON request body. The legacy
+inline form ("<prompt> --watermark false") is silently ignored by the
+official endpoint, which is why we keep the prompt clean and pass every
+control as a body field.
+
 The returned MediaResult.url points to a remote URL that expires in 24h;
 downstream frame_processor._download_media will fetch it immediately.
 """
@@ -108,20 +114,18 @@ class SeedanceVideoClient:
         seconds = self._resolve_duration(cfg, duration)
         ratio = self._resolve_ratio(cfg, width, height)
         resolution = cfg.get("resolution", "720p")
-        watermark = "true" if cfg.get("watermark", False) else "false"
+        watermark = bool(cfg.get("watermark", False))
 
-        # Volcengine convention: parameters appended as `--key value` to the prompt
-        full_prompt = (
-            f"{prompt} --resolution {resolution} --duration {seconds} "
-            f"--ratio {ratio} --watermark {watermark}"
-        )
-        if "seed" in cfg:
-            full_prompt += f" --seed {cfg['seed']}"
-
-        payload = {
+        payload: Dict[str, Any] = {
             "model": model,
-            "content": [{"type": "text", "text": full_prompt}],
+            "content": [{"type": "text", "text": prompt}],
+            "resolution": resolution,
+            "ratio": ratio,
+            "duration": seconds,
+            "watermark": watermark,
         }
+        if "seed" in cfg:
+            payload["seed"] = cfg["seed"]
 
         logger.warning(
             "[Seedance] Video generation typically takes 30-120s; "
@@ -129,7 +133,7 @@ class SeedanceVideoClient:
         )
         logger.info(
             f"[Seedance] Submitting task: model={model} duration={seconds}s "
-            f"resolution={resolution} ratio={ratio}"
+            f"resolution={resolution} ratio={ratio} watermark={watermark}"
         )
 
         async with httpx.AsyncClient(
