@@ -32,6 +32,7 @@ Just input a **topic**, and Pixelle-Video will automatically:
 
 ## 📋 Recent Updates
 
+- ✅ **2026-05-06**: Integrated ByteDance Seedance 2.0 (via Volcengine Ark) for cloud video generation; removed RunningHub integration. Two paths now: local ComfyUI + Seedance cloud API.
 - ✅ **2026-01-26**: Added the Motion Transfer pipeline — upload a reference video and an image to transfer motion.
 - ✅ **2026-01-14**: Added "Digital Human" and "Image-to-Video" pipelines, multi-language TTS voices support
 - ✅ **2025-12-28**: Configurable cloud-API concurrency limit, improved LLM structured data response handling
@@ -241,10 +242,13 @@ Browser will automatically open http://localhost:8501
 #### Step 3: Configure in Web Interface
 
 On first use, expand the "⚙️ System Configuration" panel and fill in:
-- **LLM Configuration**: Select AI model (such as Qwen, GPT, etc.) and enter API Key
-- **Image Configuration**: Configure local ComfyUI URL for image generation; configure Volcengine ARK API Key for Seedance video generation
+- **LLM Configuration**: Select an AI model (Qwen, GPT, etc.) and enter the API Key
+- **Local ComfyUI** (image / TTS / image-to-video workflows): set the ComfyUI server URL, default `http://127.0.0.1:8188`
+- **Seedance Video API** (recommended, no local GPU needed): paste your Volcengine Ark API key
 
-After configuration, click "Save Configuration", and you can start generating videos!
+After configuration, click "Save Configuration" — you're ready to generate videos!
+
+> The default video workflow is `volcengine/video_seedance_2_0.json` (Seedance 2.0) and requires a Volcengine Ark API key. If you have a local ComfyUI deployment, you can switch to `selfhost/video_wan2.1_fusionx.json` from the Web UI or `config.yaml`.
 
 <div id="tutorial-end" />
 
@@ -270,15 +274,21 @@ Used for generating video scripts.
 - Base URL: API address
 - Model: Model name
 
-#### 2. Image Configuration
-Used for generating video images.
+#### 2. Local ComfyUI (image / TTS / local image-to-video)
 
-**Local Deployment (Recommended)**  
-- ComfyUI URL: Local ComfyUI service address (default http://127.0.0.1:8188)
-- Click "Test Connection" to confirm service is available
+- **ComfyUI URL**: local ComfyUI server address (default `http://127.0.0.1:8188`)
+- Click "Test Connection" to confirm the service is reachable
+- Workflow files live under `workflows/selfhost/`. Files starting with `image_` / `video_` / `tts_` / `analyse_` / `i2v_` are auto-discovered.
 
-**Cloud Deployment**  
-- Volcengine ARK API Key: Seedance video generation service key
+#### 3. Seedance Cloud Video API (recommended, no local GPU)
+
+ByteDance Seedance 2.0 is served via Volcengine Ark and produces 4–15 second clips in 30–120 seconds.
+
+- **Seedance API Key**: Volcengine Ark API key (required when Seedance is in use)
+- **Seedance Base URL**: defaults to `https://ark.cn-beijing.volces.com/api/v3`. Override only if you need a different region or proxy.
+- **Cloud Concurrent Limit**: parallel call ceiling for cloud APIs like Seedance (1–10)
+
+The workflow file `workflows/volcengine/video_seedance_2_0.json` controls model ID, resolution, duration, aspect ratio, and watermark (`watermark: false` by default to strip the ByteDance overlay).
 
 After configuration, click "Save Configuration".
 
@@ -321,11 +331,14 @@ After configuration, click "Save Configuration".
 #### Image Generation
 Determine what style of images AI generates.
 
-**ComfyUI Workflow**  
-- Select image generation workflow from dropdown menu
-- Supports local deployment (selfhost) and cloud-API (volcengine/Seedance) workflows
-- Default uses `image_flux.json`
-- If you know ComfyUI, you can put your own workflows in the `workflows/` folder
+**Image Workflow**
+- Select an image generation workflow from the dropdown (local ComfyUI / selfhost only)
+- Default: `selfhost/image_flux.json`
+- Drop your own workflows into `workflows/selfhost/` if you know ComfyUI
+
+**Video Workflow**
+- Default: `volcengine/video_seedance_2_0.json` (Seedance 2.0 cloud API)
+- Switch to `selfhost/video_wan2.1_fusionx.json` for fully-local generation (requires GPU)
 
 **Image Dimensions**  
 - Set width and height of generated images (unit: pixels)
